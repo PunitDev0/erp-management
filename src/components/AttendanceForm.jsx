@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { addAttendance } from '../../lib/api';
+import { addAttendance } from '@/lib/api';
 
 export default function AttendanceForm() {
   const router = useRouter();

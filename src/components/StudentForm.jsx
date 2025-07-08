@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { addStudent } from '../../lib/api';
+import { addStudent } from '@/lib/api';
 
 export default function StudentForm({ type }) {
   const router = useRouter();

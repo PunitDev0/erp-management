@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { getAttendance } from '../../lib/api';
+import { getAttendance } from '@/lib/api';
 
 export default function AttendanceTable() {
   const [attendance, setAttendance] = useState([]);

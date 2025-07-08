@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getStudents, deleteStudent } from '../../lib/api';
+import { getStudents, deleteStudent } from '@/lib/api';
 
 export default function StudentTable() {
   const [students, setStudents] = useState([]);
