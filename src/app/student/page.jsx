@@ -1,5 +1,5 @@
 'use client';
-import StudentTable from '../components/StudentTable';
+import StudentTable from '@/components/StudentTable';
 
 export default function Student() {
   return (

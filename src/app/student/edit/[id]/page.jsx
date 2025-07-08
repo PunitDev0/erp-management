@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { getStudents, updateStudent } from '../../../lib/api';
+import { getStudents, updateStudent } from '@/lib/api';
 
 export default function EditStudent() {
   const router = useRouter();
