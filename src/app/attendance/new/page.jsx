@@ -1,5 +1,5 @@
 'use client';
-import AttendanceForm from '../../components/AttendanceForm';
+import AttendanceForm from '@components/AttendanceForm';
 
 export default function NewAttendance() {
   return (

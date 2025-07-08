@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import StudentTable from '../components/StudentTable';
+import StudentTable from '@/components/StudentTable';
 
 export default function Admission() {
   return (

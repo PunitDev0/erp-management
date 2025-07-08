@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import AttendanceTable from '../components/AttendanceTable';
+import AttendanceTable from '@/components/AttendanceTable';
 
 export default function Attendance() {
   return (
