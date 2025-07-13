@@ -62,6 +62,7 @@ export function NavMain({
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton asChild>
                             <a href={subItem.url} className="text-gray-200 hover:text-white">
+                          {subItem.icon && <subItem.icon className="text-black" />}
                               <span>{subItem.title}</span>
                             </a>
                           </SidebarMenuSubButton>

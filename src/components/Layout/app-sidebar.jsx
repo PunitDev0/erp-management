@@ -11,6 +11,7 @@ import {
   MessageCircle,
   Package,
   Settings,
+  User2,
 } from "lucide-react"
 
 import { NavMain } from "@/components/Layout/nav-main"
@@ -55,6 +56,21 @@ const data = {
       url: "#",
       icon: User,
       isActive: true,
+      items: [
+        {
+          title: "Student Admission",
+          url: "/admission/new-student",
+          icon: User2,
+          isActive: false,
+        },
+        {
+          title: "Staff Admission",
+          url: "/admission/new-staff",
+          icon: Users,
+          isActive: false,
+        }
+
+      ]
     },
     {
       title: "Student",
