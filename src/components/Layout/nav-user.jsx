@@ -54,15 +54,15 @@ export function NavUser({
                   <AvatarFallback className="rounded-lg bg-gray-700 text-white">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight ml-2">
-                  <span className="text-gray-100 font-medium">{user.name}</span>
-                  <span className="text-gray-300 text-xs">{user.email}</span>
+                  <span className=" font-medium">{user.name}</span>
+                  <span className=" text-xs">{user.email}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto text-gray-400 size-4" />
               </SidebarMenuButton>
             </motion.div>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 bg-white/10 backdrop-blur-md rounded-lg border-none"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 bg-white/10 backdrop-blur-md text-black rounded-lg border-none"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
@@ -74,35 +74,35 @@ export function NavUser({
                   <AvatarFallback className="rounded-lg bg-gray-700 text-white">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="text-gray-100 font-medium">{user.name}</span>
-                  <span className="text-gray-300 text-xs">{user.email}</span>
+                  <span className=" font-medium">{user.name}</span>
+                  <span className=" text-xs">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-700" />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="hover:bg-gray-800 text-gray-100">
+              <DropdownMenuItem className="hover:bg-gray-800 ">
                 <Sparkles className="text-yellow-400" />
                 <span>Upgrade to Pro</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-gray-700" />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="hover:bg-gray-800 text-gray-100">
+              <DropdownMenuItem className="hover:bg-gray-800 ">
                 <BadgeCheck className="text-green-400" />
                 <span>Account</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-gray-800 text-gray-100">
+              <DropdownMenuItem className="hover:bg-gray-800 ">
                 <CreditCard className="text-blue-400" />
                 <span>Billing</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-gray-800 text-gray-100">
+              <DropdownMenuItem className="hover:bg-gray-800 ">
                 <Bell className="text-yellow-400" />
                 <span>Notifications</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-gray-700" />
-            <DropdownMenuItem className="hover:bg-gray-800 text-gray-100">
+            <DropdownMenuItem className="hover:bg-gray-800 ">
               <LogOut className="text-red-400" />
               <span>Log out</span>
             </DropdownMenuItem>

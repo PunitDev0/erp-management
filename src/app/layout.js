@@ -1,16 +1,13 @@
-import { Geist, Geist_Mono } from "next/font/google";
+// app/layout.js
+import { Inter } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
-import Link from "next/link";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Load Inter font and define a CSS variable
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"], // adjust as needed
 });
 
 export const metadata = {
@@ -20,11 +17,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-    <body className="flex flex-col min-sm:h-screen">
-      
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans bg-white text-black min-h-screen">
         {children}
-    </body>
-  </html>
+      </body>
+    </html>
   );
 }

@@ -12,6 +12,8 @@ import {
   Package,
   Settings,
   User2,
+  Home,Zap,
+  Settings2
 } from "lucide-react"
 
 import { NavMain } from "@/components/Layout/nav-main"
@@ -55,7 +57,7 @@ const data = {
       title: "Admissions",
       url: "#",
       icon: User,
-      isActive: true,
+      // isActive: true,
       items: [
         {
           title: "Student Admission",
@@ -72,15 +74,89 @@ const data = {
 
       ]
     },
-    {
-      title: "Student",
-      url: "#",
-      icon: Users,
-    },
+  
     {
       title: "Attendance",
       url: "#",
       icon: Check,
+      // isActive: true,
+      items: [
+        {
+          title: "Student Attendance",
+          url: "/admission/new-student",
+          icon: User2,
+          isActive: false,
+        },
+        {
+          title: "Staff Attendance",
+          url: "/admission/new-staff",
+          icon: Users,
+          isActive: false,
+        },
+        {
+          title: "Attendance Sessions",
+          url: "/admission/new-staff",
+          icon: Users,
+          isActive: false,
+        }
+      ]
+    },
+
+    {
+      title: "Payroll",
+      url: "#",
+      icon: Users,
+      // isActive: true,
+      items: [
+        {
+          title: "Salary",
+          url: "/admission/new-student",
+          icon: User2,
+          isActive: false,
+        },
+        {
+          title: "Set Salary",
+          url: "/admission/new-staff",
+          icon: Users,
+          isActive: false,
+        },
+        {
+          title: "Staff Leave Details",
+          url: "/admission/new-staff",
+          icon: Users,
+          isActive: false,
+        }
+      ]
+    },
+    {
+      title: "Academic",
+      url: "#",
+      icon: Building,
+      items: [
+        {
+          title: "Salary",
+          url: "/admission/new-student",
+          icon: User2,
+          isActive: false,
+        },
+        {
+          title: "Set Salary",
+          url: "/admission/new-staff",
+          icon: Users,
+          isActive: false,
+        },
+        {
+          title: "Staff Leave Details",
+          url: "/admission/new-staff",
+          icon: Users,
+          isActive: false,
+        }
+      ]
+    },
+    {
+      title: "Facilities",
+      url: "#",
+      icon: Building,
     },
     {
       title: "Fees",
@@ -88,19 +164,9 @@ const data = {
       icon: DollarSign,
     },
     {
-      title: "Payroll",
+      title: "Student",
       url: "#",
       icon: Users,
-    },
-    {
-      title: "Academic",
-      url: "#",
-      icon: Building,
-    },
-    {
-      title: "Facilities",
-      url: "#",
-      icon: Building,
     },
     {
       title: "Reports",
@@ -142,6 +208,13 @@ const data = {
   ],
 }
 
+const toolButtons = [
+  { title: "CLI", icon: Zap },
+  { title: "Docs", icon: Home },
+  { title: "Settings", icon: Settings2},
+  { title: "API" }, // no icon
+  // add as many as you like – the row scrolls horizontally
+]
 export function AppSidebar({
   ...props
 }) {
@@ -151,7 +224,7 @@ export function AppSidebar({
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+      <NavMain items={data.navMain} tools={toolButtons} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

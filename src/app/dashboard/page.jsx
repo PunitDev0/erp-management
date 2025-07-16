@@ -432,10 +432,6 @@ export default function Page() {
       <AppSidebar />
       <SidebarInset>
         <div className="min-h-screen  p-4 sm:p-6 lg:p-8 font-sans transition-colors duration-500">
-          {/* Header */}
-         
-
-          {/* Breadcrumb */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -457,7 +453,7 @@ export default function Page() {
           </motion.div>
 
           {/* Main Content */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-2">
             {/* Admissions Overview */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -465,12 +461,7 @@ export default function Page() {
               transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
               className="w-full h-[28rem] sm:h-[32rem]"
             >
-              <Card className="rounded-3xl shadow-lg border-none bg-white/90 backdrop-blur-md hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 flex items-center">
-                    <Users className="mr-2 h-5 w-5 text-indigo-600" /> Admissions Overview
-                  </CardTitle>
-                </CardHeader>
+              <Card className="rounded-3xl shadow-none border-none bg-transparent backdrop-blur-md  transition-all duration-300 h-full flex flex-col">
                 <CardContent className="flex-grow">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
                     {/* Sub-Box 1: Weekly Admissions */}
@@ -581,7 +572,8 @@ export default function Page() {
               </Card>
             </motion.div>
 
-            {/* Attendance Summary */}
+           <div className='flex'>
+               {/* Attendance Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -672,6 +664,7 @@ export default function Page() {
                 </CardContent>
               </Card>
             </motion.div>
+           </div>
 
             {/* Payroll Overview */}
             <motion.div

@@ -134,9 +134,9 @@ export default function StudentAdmissionForm() {
       transition={{ duration: 0.6, ease: 'easeOut' }}
       className="min-h-screen   font-sans"
     >
-      <div className="max-w-7xl mx-auto">
-        <Card className=" to-white border-double border-2 border-indigo-200 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 p-4 sm:p-6">
-          
+      <div className=" mx-auto">
+        <Card className=" bg-transparent shadow-none border-none rounded-3xl  transition-all duration-300 p-0">
+
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Personal Details */}
@@ -144,12 +144,12 @@ export default function StudentAdmissionForm() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.6, ease: 'easeOut' }}
-                className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-indigo-100"
+                className="bg-white/80 backdrop-blur-sm  rounded-2xl border border-indigo-100 rounded-t-xl"
               >
-                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center bg-blue-500 rounded-t-xl p-4">
                   <User className="mr-2 h-5 w-5 text-indigo-600" /> Personal Details
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">First Name</Label>
                     <Input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} />
@@ -305,12 +305,12 @@ export default function StudentAdmissionForm() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
-                className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-indigo-100"
+                className="bg-white/80 backdrop-blur-sm  rounded-2xl border border-indigo-100 rounded-t-xl"
               >
-                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center bg-blue-500 rounded-t-xl p-4">
                   <User className="mr-2 h-5 w-5 text-indigo-600" /> Family Details
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
                   <div className="space-y-2">
                     <Label htmlFor="fathersOccupation" className="text-sm font-medium text-gray-700">Father's Occupation</Label>
                     <Input type="text" id="fathersOccupation" name="fathersOccupation" value={formData.fathersOccupation} onChange={handleChange} />
@@ -353,12 +353,12 @@ export default function StudentAdmissionForm() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
-                className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-indigo-100"
+                className="bg-white/80 backdrop-blur-sm  rounded-2xl border border-indigo-100 rounded-t-xl"
               >
-                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center bg-blue-500 rounded-t-xl p-4">
                   <User className="mr-2 h-5 w-5 text-indigo-600" /> Guardian Details
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
                   <div className="space-y-2">
                     <Label htmlFor="guardianName" className="text-sm font-medium text-gray-700">Guardian Name</Label>
                     <Input type="text" id="guardianName" name="guardianName" value={formData.guardianName} onChange={handleChange} />
@@ -389,12 +389,12 @@ export default function StudentAdmissionForm() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.6, ease: 'easeOut' }}
-                className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-indigo-100"
+                className="bg-white/80 backdrop-blur-sm  rounded-2xl border border-indigo-100 rounded-t-xl"
               >
-                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center bg-blue-500 rounded-t-xl p-4">
                   <FileText className="mr-2 h-5 w-5 text-indigo-600" /> Administrative
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
                   <div className="space-y-2">
                     <Label htmlFor="admissionNo" className="text-sm font-medium text-gray-700">Admission No</Label>
                     <Input type="text" id="admissionNo" name="admissionNo" value={formData.admissionNo} onChange={handleChange} />
@@ -407,13 +407,13 @@ export default function StudentAdmissionForm() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6, ease: 'easeOut' }}
-                className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-indigo-100"
+                className="bg-white/80 backdrop-blur-sm  rounded-2xl border border-indigo-100 rounded-t-xl"
               >
-                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center bg-blue-500 rounded-t-xl p-4">
                   <FileText className="mr-2 h-5 w-5 text-indigo-600" /> Academic Details
                 </h2>
                 {formData.academicDetails.map((academic, index) => (
-                  <div key={index} className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4">
+                  <div key={index} className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-4 p-4">
                     <div className="space-y-2">
                       <Label htmlFor={`academicDetails.${index}.academicYear`} className="text-sm font-medium text-gray-700">Academic Year</Label>
                       <Input type="text" id={`academicDetails.${index}.academicYear`} name={`academicDetails.${index}.academicYear`} value={academic.academicYear} onChange={handleChange} />
