@@ -10,10 +10,10 @@ export default function Layout({ children }) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        {/* <AppHeader /> */}
+        <AppHeader />
 
-        <main className="mt-16 p-4 bg-gray-200 min-h-screen">
-          <div className="h-full w-full rounded-2xl  p-4">
+        <main className="  bg-gray-200 min-h-screen">
+          <div className="h-full w-full rounded-2xl p-5">
             {children}
           </div>
         </main>

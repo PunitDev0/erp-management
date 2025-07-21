@@ -30,7 +30,7 @@ export default function EditStudent() {
     }
   };
 
-  if (!formData) return <div>Loading...</div>;
+  // if (!formData) return <div>Loading...</div>;
 
   return (
     <div>
@@ -87,4 +87,4 @@ export default function EditStudent() {
       </form>
     </div>
   );
-}
+} 

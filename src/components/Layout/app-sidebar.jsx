@@ -12,8 +12,14 @@ import {
   Package,
   Settings,
   User2,
-  Home,Zap,
-  Settings2
+  Home, Zap,
+  Settings2,
+  CalendarDays,     // For Student Time Table
+  CalendarCheck,    // For Staff Time Table
+  FileClock,        // For Exam Scheduling
+  Users2,           // For Meeting
+  BadgePercent,     // For Scholarship
+  BarChart2,
 } from "lucide-react"
 
 import { NavMain } from "@/components/Layout/nav-main"
@@ -31,188 +37,171 @@ import {
 // Updated sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: 'shadcn',
+    email: 'm@example.com',
+    avatar: '/avatars/shadcn.jpg',
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: 'Acme Inc',
       logo: Users,
-      plan: "Enterprise",
+      plan: 'Enterprise',
     },
     {
-      name: "Acme Corp.",
+      name: 'Acme Corp.',
       logo: Check,
-      plan: "Startup",
+      plan: 'Startup',
     },
     {
-      name: "Evil Corp.",
+      name: 'Evil Corp.',
       logo: Settings,
-      plan: "Free",
+      plan: 'Free',
     },
   ],
   navMain: [
     {
-      title: "Admissions",
-      url: "#",
+      title: 'Admissions',
       icon: User,
-      // isActive: true,
       items: [
         {
-          title: "Student Admission",
-          url: "/admission/new-student",
+          title: 'Student Admission',
+          url: '/admission/student',
           icon: User2,
-          isActive: false,
         },
         {
-          title: "Staff Admission",
-          url: "/admission/new-staff",
+          title: 'Staff Admission',
+          url: '/admission/staff',
           icon: Users,
-          isActive: false,
-        }
-
-      ]
+        },
+      ],
     },
-  
     {
-      title: "Attendance",
-      url: "#",
+      title: 'Attendance',
       icon: Check,
-      // isActive: true,
       items: [
         {
-          title: "Student Attendance",
-          url: "/admission/new-student",
+          title: 'Student Attendance',
+          url: '/attendance/student',
           icon: User2,
-          isActive: false,
         },
         {
-          title: "Staff Attendance",
-          url: "/admission/new-staff",
+          title: 'Staff Attendance',
+          url: '/attendance/staff',
           icon: Users,
-          isActive: false,
         },
-        {
-          title: "Attendance Sessions",
-          url: "/admission/new-staff",
-          icon: Users,
-          isActive: false,
-        }
-      ]
+        // {
+        //   title: 'Attendance Sessions',
+        //   url: '/attendance/sessions',
+        //   icon: Users,
+        // },
+      ],
     },
-
     {
-      title: "Payroll",
-      url: "#",
+      title: 'Payroll',
       icon: Users,
-      // isActive: true,
       items: [
         {
-          title: "Salary",
-          url: "/admission/new-student",
+          title: 'Salary',
+          url: '/payroll/salary',
           icon: User2,
-          isActive: false,
         },
         {
-          title: "Set Salary",
-          url: "/admission/new-staff",
+          title: 'Set Salary',
+          url: '/payroll/set-salary',
           icon: Users,
-          isActive: false,
         },
         {
-          title: "Staff Leave Details",
-          url: "/admission/new-staff",
+          title: 'Staff Leave Details',
+          url: '/payroll/leave-details',
           icon: Users,
-          isActive: false,
-        }
-      ]
+        },
+      ],
     },
     {
-      title: "Academic",
-      url: "#",
+      title: 'Academic',
       icon: Building,
       items: [
+        // {
+        //   title: 'Student Time Table',
+        //   url: '/academic/student-time-table',
+        //   icon: CalendarDays,
+        // },
         {
-          title: "Salary",
-          url: "/admission/new-student",
-          icon: User2,
-          isActive: false,
+          title: 'Staff Time Table',
+          url: '/academic/staff-time-table',
+          icon: CalendarCheck,
         },
         {
-          title: "Set Salary",
-          url: "/admission/new-staff",
-          icon: Users,
-          isActive: false,
+          title: 'Exam Scheduling',
+          url: '/academic/exam-scheduling',
+          icon: FileClock,
         },
         {
-          title: "Staff Leave Details",
-          url: "/admission/new-staff",
-          icon: Users,
-          isActive: false,
-        }
-      ]
+          title: 'Meeting',
+          url: '/academic/meeting',
+          icon: Users2,
+        },
+        {
+          title: 'Scholarship',
+          url: '/academic/scholarship',
+          icon: BadgePercent,
+        },
+        {
+          title: 'Assignment',
+          url: '/academic/assignment',
+          icon: FileText,
+        },
+        // {
+        //   title: 'Progress Report',
+        //   url: '/academic/progress-report',
+        //   icon: BarChart2,
+        // },
+      ],
     },
+    // {
+    //   title: 'Facilities',
+    //   icon: Building,
+    // },
     {
-      title: "Facilities",
-      url: "#",
-      icon: Building,
-    },
-    {
-      title: "Fees",
-      url: "#",
+      title: 'Fees',
+      url: '/fees',
       icon: DollarSign,
     },
     {
-      title: "Student",
-      url: "#",
+      title: 'Student',
+      url: '/student',
       icon: Users,
     },
     {
-      title: "Reports",
-      url: "#",
-      icon: FileText,
-    },
-    {
-      title: "SMS",
-      url: "#",
-      icon: MessageCircle,
-    },
-    {
-      title: "Inventory",
-      url: "#",
-      icon: Package,
-    },
-    {
-      title: "Tools",
-      url: "#",
+      title: 'Tools',
+      url: '/tools',
       icon: Settings,
     },
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
+      name: 'Design Engineering',
+      url: '/projects/design',
       icon: User,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
+      name: 'Sales & Marketing',
+      url: '/projects/sales',
       icon: DollarSign,
     },
     {
-      name: "Travel",
-      url: "#",
+      name: 'Travel',
+      url: '/projects/travel',
       icon: Building,
     },
   ],
-}
+};
 
 const toolButtons = [
-  { title: "CLI", icon: Zap },
-  { title: "Docs", icon: Home },
-  { title: "Settings", icon: Settings2},
-  { title: "API" }, // no icon
+  { title: "SMS", icon: Zap, url:'/sms' },
+  { title: "Inventory", icon: Home, url:'/inventory'  },
+  { title: "Reports", url:'/report'  }, // no icon
+  { title: "Settings", icon: Settings2, url:'/setting'  },
   // add as many as you like – the row scrolls horizontally
 ]
 export function AppSidebar({
@@ -224,7 +213,7 @@ export function AppSidebar({
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-      <NavMain items={data.navMain} tools={toolButtons} />
+        <NavMain items={data.navMain} tools={toolButtons} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
