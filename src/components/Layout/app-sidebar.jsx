@@ -121,11 +121,6 @@ const data = {
       title: 'Academic',
       icon: Building,
       items: [
-        // {
-        //   title: 'Student Time Table',
-        //   url: '/academic/student-time-table',
-        //   icon: CalendarDays,
-        // },
         {
           title: 'Staff Time Table',
           url: '/academic/staff-time-table',
@@ -151,17 +146,13 @@ const data = {
           url: '/academic/assignment',
           icon: FileText,
         },
-        // {
-        //   title: 'Progress Report',
-        //   url: '/academic/progress-report',
-        //   icon: BarChart2,
-        // },
+        {
+          title: 'Progress Report',
+          url: '/academic/progress-report',
+          icon: BarChart2,
+        },
       ],
     },
-    // {
-    //   title: 'Facilities',
-    //   icon: Building,
-    // },
     {
       title: 'Fees',
       url: '/fees',
@@ -174,8 +165,40 @@ const data = {
     },
     {
       title: 'Tools',
-      url: '/tools',
+      // url: '/tools',
       icon: Settings,
+      items: [
+        {
+          title: 'Degree',
+          url: '/tools/add-degree',
+          icon: CalendarCheck,
+        },
+        {
+          title: 'Course',
+          url: '/tools/add-course',
+          icon: FileClock,
+        },
+        {
+          title: 'Department',
+          url: '/tools/add-department',
+          icon: Users2,
+        },
+        {
+          title: 'Subject',
+          url: '/tools/add-subject',
+          icon: BadgePercent,
+        },
+        {
+          title: 'Syllabus',
+          url: '/tools/add-syllabus',
+          icon: FileText,
+        },
+        // {
+        //   title: 'Progress Report',
+        //   url: '/academic/progress-report',
+        //   icon: BarChart2,
+        // },
+      ],
     },
   ],
   projects: [

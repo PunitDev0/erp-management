@@ -217,7 +217,7 @@ export function NavMain({ items, tools = [] }) {
 
       {/* Tools Section */}
     </SidebarGroup>
-      {tools.length > 0 && (
+      {/* {tools.length > 0 && (
         <div className="mt-auto pb-4">
           <SidebarGroupLabel className="mt-4 text-xs font-semibold uppercase tracking-wide text-indigo-600">
             Tools
@@ -244,7 +244,7 @@ export function NavMain({ items, tools = [] }) {
             ))}
           </div>
         </div>
-      )}
+      )} */}
   </>
   );
 }

@@ -356,8 +356,8 @@ export default function StudentAttendancePage() {
       className="min-h-screen font-sans"
     >
       <div className="mx-auto">
-        <Card className="bg-white/95 backdrop-blur-md shadow-xl rounded-3xl border border-indigo-100 p-0">
-          <CardHeader className="bg-indigo-600 rounded-t-3xl p-6">
+        <Card className="bg-white/95 backdrop-blur-md shadow-lg rounded-3xl border border-indigo-100 p-0">
+          <CardHeader className="bg-indigo-600 rounded-t-lg p-6">
             <CardTitle className="text-2xl md:text-3xl font-bold text-white text-center">
               Student Attendance
             </CardTitle>

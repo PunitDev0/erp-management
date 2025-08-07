@@ -1,6 +1,7 @@
 // app/layout.js
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 // Load Inter font and define a CSS variable
 const inter = Inter({
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={inter.variable}>
       <body className="font-sans bg-white text-black min-h-screen">
         {children}
+         <Toaster />
       </body>
     </html>
   );

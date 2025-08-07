@@ -115,7 +115,7 @@ export default function StudentsPage() {
     >
       <div className="mx-auto">
         <Card className="bg-white/95 backdrop-blur-md shadow-xl rounded-3xl border border-indigo-100 p-0">
-          <CardHeader className="bg-indigo-600 rounded-t-3xl p-6">
+          <CardHeader className="bg-indigo-600 rounded-t-lg p-6">
             <CardTitle className="text-2xl md:text-3xl font-bold text-white text-center">
               Students List
             </CardTitle>

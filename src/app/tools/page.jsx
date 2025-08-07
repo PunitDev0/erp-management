@@ -1,8 +1,11 @@
-export default function Tools() {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold mb-4 text-erp-blue">Tools</h1>
-        <p className="text-gray-600">This module is under development.</p>
-      </div>
-    );
-  }
+import Layout from '@/components/Layout/Layout'
+import FeesPage from '@/components/Tools/Tools'
+import React from 'react'
+
+function page() {
+  return (
+    <Layout><FeesPage/></Layout>
+  )
+}
+
+export default page

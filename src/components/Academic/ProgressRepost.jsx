@@ -52,8 +52,8 @@ export default function EnterProgressReportPage() {
       className="min-h-screen font-sans p-4 md:p-8"
     >
       <div className="mx-auto max-w-7xl">
-        <Card className="bg-white/95 backdrop-blur-md shadow-xl rounded-3xl border border-indigo-100 p-0">
-          <CardHeader className="bg-indigo-600 rounded-t-3xl p-6">
+        <Card className="bg-white/95 backdrop-blur-md shadow-xl rounded-lg border border-indigo-100 p-0">
+          <CardHeader className="bg-indigo-600 rounded-t-lg p-6">
             <CardTitle className="text-2xl md:text-3xl font-bold text-white text-center">
               Enter Progress Report
             </CardTitle>
