@@ -40,6 +40,7 @@ import {
   Activity,
   AlertTriangle,
   ArrowUpDown,
+  Upload,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -62,6 +63,8 @@ import {
 } from "recharts"
 import { Tooltip as UiTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import axios from 'axios'
+import * as XLSX from 'xlsx'
+import clsx from 'clsx'
 
 export default function AdminsPage() {
   const [selectedAdmin, setSelectedAdmin] = useState(null)
@@ -75,6 +78,7 @@ export default function AdminsPage() {
   const [isPermissionsDialogOpen, setIsPermissionsDialogOpen] = useState(false)
   const [isActivityLogDialogOpen, setIsActivityLogDialogOpen] = useState(false)
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false)
+  const [isBulkImportDialogOpen, setIsBulkImportDialogOpen] = useState(false)
   const [selectedAdminForAction, setSelectedAdminForAction] = useState(null)
   const [sortConfig, setSortConfig] = useState({ key: "name", direction: "asc" })
   const [selectedPermissions, setSelectedPermissions] = useState([])
@@ -82,6 +86,8 @@ export default function AdminsPage() {
   const [admins, setAdmins] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [importFile, setImportFile] = useState(null)
+  const [previewData, setPreviewData] = useState([])
   const [editFormData, setEditFormData] = useState({
     name: "",
     email: "",
@@ -242,7 +248,113 @@ export default function AdminsPage() {
   }
 
   const handleExport = () => {
+    const flattenedData = admins.map((admin) => ({
+      name: admin.name,
+      email: admin.email,
+      phone: admin.phone || '',
+      role: admin.role,
+      department: admin.department || '',
+      status: admin.status,
+      institution: admin.institution || 'Unknown',
+      institutionType: admin.institutionType || 'Unknown',
+      permissions: admin.permissions.join(','),
+      lastLogin: admin.lastLogin ? new Date(admin.lastLogin).toLocaleString() : 'Never',
+      createdAt: new Date(admin.createdAt).toLocaleString(),
+      loginCount: admin.loginCount || 0,
+    }))
+
+    const ws = XLSX.utils.json_to_sheet(flattenedData)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Admins')
+    XLSX.writeFile(wb, 'admins.xlsx')
     toast.success("Admin data exported successfully")
+  }
+
+  const handleDownloadTemplate = () => {
+    const sampleData = [
+      {
+        name: 'John Smith',
+        email: 'john.smith@institution.edu',
+        phone: '+1 (555) 123-4567',
+        role: 'admin',
+        department: 'Academic Affairs',
+        status: 'Active',
+        institutionId: institutions[0]?._id || '',
+        permissions: 'students,teachers,attendance',
+      },
+    ]
+
+    const ws = XLSX.utils.json_to_sheet(sampleData)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'AdminTemplate')
+    XLSX.writeFile(wb, 'admin_template.xlsx')
+    toast.success('Template downloaded successfully')
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    setImportFile(file)
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const data = event.target.result
+        const wb = XLSX.read(data, { type: 'binary' })
+        const wsname = wb.SheetNames[0]
+        const ws = wb.Sheets[wsname]
+        const jsonData = XLSX.utils.sheet_to_json(ws)
+        setPreviewData(jsonData.slice(0, 5)) // Preview first 5 rows
+      }
+      reader.readAsBinaryString(file)
+    }
+  }
+
+  const handleBulkImport = async () => {
+    if (!importFile) {
+      toast.error('Please select a file to import')
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const data = event.target.result
+        const wb = XLSX.read(data, { type: 'binary' })
+        const wsname = wb.SheetNames[0]
+        const ws = wb.Sheets[wsname]
+        const jsonData = XLSX.utils.sheet_to_json(ws)
+
+        const processedData = jsonData.map((row) => ({
+          name: row.name,
+          email: row.email,
+          phone: row.phone || '',
+          role: row.role || 'admin',
+          department: row.department || '',
+          status: row.status || 'Active',
+          institutionId: row.institutionId,
+          permissions: row.permissions ? row.permissions.split(',') : [],
+          sendCredentials: true,
+        }))
+
+        const response = await axios.post('/api/admins/bulk', processedData)
+        const result = response.data
+
+        if (result.success) {
+          setAdmins([...admins, ...result.data])
+          toast.success('Admins imported successfully')
+          setIsBulkImportDialogOpen(false)
+          setImportFile(null)
+          setPreviewData([])
+        } else {
+          toast.error(result.error)
+        }
+      }
+      reader.readAsBinaryString(importFile)
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const confirmResetPassword = async () => {
@@ -372,6 +484,14 @@ export default function AdminsPage() {
               <Download className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
               Export
             </Button>
+            {/* <Button 
+              variant="outline" 
+              onClick={() => setIsBulkImportDialogOpen(true)}
+              className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-xs sm:text-sm px-3 sm:px-4"
+            >
+              <Users className="w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2" />
+              Bulk Import
+            </Button> */}
           </div>
         </div>
 
@@ -1129,6 +1249,120 @@ export default function AdminsPage() {
                 disabled={isLoading}
               >
                 Deactivate User
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isBulkImportDialogOpen} onOpenChange={setIsBulkImportDialogOpen}>
+          <DialogContent className={clsx('max-w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto')}>
+            <DialogHeader>
+              <DialogTitle>Bulk Import Admins</DialogTitle>
+              <DialogDescription>Upload an Excel file to import multiple admins. Download the template to ensure correct format.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Expected Data Format</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  The Excel file should contain the following columns. Permissions should be a comma-separated list of permission IDs (e.g., "students,teachers,attendance").
+                </p>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>name</TableHead>
+                      <TableHead>email</TableHead>
+                      <TableHead>phone</TableHead>
+                      <TableHead>role</TableHead>
+                      <TableHead>department</TableHead>
+                      <TableHead>status</TableHead>
+                      <TableHead>institutionId</TableHead>
+                      <TableHead>permissions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>John Smith</TableCell>
+                      <TableCell>john.smith@institution.edu</TableCell>
+                      <TableCell>+1 (555) 123-4567</TableCell>
+                      <TableCell>admin</TableCell>
+                      <TableCell>Academic Affairs</TableCell>
+                      <TableCell>Active</TableCell>
+                      <TableCell>{institutions[0]?._id || 'institution_id'}</TableCell>
+                      <TableCell>students,teachers,attendance</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+                <Button
+                  variant="outline"
+                  onClick={handleDownloadTemplate}
+                  className="mt-4 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Template
+                </Button>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Upload File</h4>
+                <Input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleFileChange}
+                  className="border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 transition-all duration-300 rounded-lg"
+                />
+              </div>
+              {previewData.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Data Preview (First 5 Rows)</h4>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>name</TableHead>
+                        <TableHead>email</TableHead>
+                        <TableHead>phone</TableHead>
+                        <TableHead>role</TableHead>
+                        <TableHead>department</TableHead>
+                        <TableHead>status</TableHead>
+                        <TableHead>institutionId</TableHead>
+                        <TableHead>permissions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {previewData.map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{row.name}</TableCell>
+                          <TableCell>{row.email}</TableCell>
+                          <TableCell>{row.phone || 'N/A'}</TableCell>
+                          <TableCell>{row.role || 'admin'}</TableCell>
+                          <TableCell>{row.department || 'N/A'}</TableCell>
+                          <TableCell>{row.status || 'Active'}</TableCell>
+                          <TableCell>{row.institutionId}</TableCell>
+                          <TableCell>{row.permissions || 'None'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </div>
+            <DialogFooter className="mt-6">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsBulkImportDialogOpen(false)
+                  setImportFile(null)
+                  setPreviewData([])
+                }}
+                className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleBulkImport}
+                disabled={isLoading || !importFile}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Import Admins
               </Button>
             </DialogFooter>
           </DialogContent>

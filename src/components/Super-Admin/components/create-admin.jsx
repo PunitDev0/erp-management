@@ -1,16 +1,16 @@
-"use client"
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Progress } from "@/components/ui/progress"
+'use client'
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog';
 import {
   UserPlus,
   Search,
@@ -41,7 +41,8 @@ import {
   Copy,
   RefreshCw,
   ArrowUpDown,
-} from "lucide-react"
+  Upload,
+} from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -50,46 +51,51 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts"
-import { Tooltip as UiTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import axios from 'axios'
+} from 'recharts';
+import { Tooltip as UiTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import axios from 'axios';
+import * as XLSX from 'xlsx';
+import clsx from 'clsx';
 
 const availablePermissions = [
-  { id: "students", label: "Student Management", description: "Manage student records and profiles", category: "Core" },
-  { id: "teachers", label: "Teacher Management", description: "Manage teacher records and assignments", category: "Core" },
-  { id: "attendance", label: "Attendance Tracking", description: "Track and manage attendance records", category: "Core" },
-  { id: "grades", label: "Grade Management", description: "Manage grades and academic records", category: "Academic" },
-  { id: "fees", label: "Fee Management", description: "Handle fee collection and payments", category: "Financial" },
-  { id: "library", label: "Library Management", description: "Manage library resources and books", category: "Resources" },
-  { id: "notices", label: "Notice Management", description: "Create and manage notices", category: "Communication" },
-  { id: "reports", label: "Reports & Analytics", description: "Access to reports and analytics", category: "Analytics" },
-  { id: "settings", label: "System Settings", description: "Configure system settings", category: "Administration" },
-]
+  { id: 'students', label: 'Student Management', description: 'Manage student records and profiles', category: 'Core' },
+  { id: 'teachers', label: 'Teacher Management', description: 'Manage teacher records and assignments', category: 'Core' },
+  { id: 'attendance', label: 'Attendance Tracking', description: 'Track and manage attendance records', category: 'Core' },
+  { id: 'grades', label: 'Grade Management', description: 'Manage grades and academic records', category: 'Academic' },
+  { id: 'fees', label: 'Fee Management', description: 'Handle fee collection and payments', category: 'Financial' },
+  { id: 'library', label: 'Library Management', description: 'Manage library resources and books', category: 'Resources' },
+  { id: 'notices', label: 'Notice Management', description: 'Create and manage notices', category: 'Communication' },
+  { id: 'reports', label: 'Reports & Analytics', description: 'Access to reports and analytics', category: 'Analytics' },
+  { id: 'settings', label: 'System Settings', description: 'Configure system settings', category: 'Administration' },
+];
 
 export default function CreateAdminPage() {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [selectedInstitution, setSelectedInstitution] = useState("")
-  const [selectedPermissions, setSelectedPermissions] = useState([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterStatus, setFilterStatus] = useState("all")
-  const [sortConfig, setSortConfig] = useState({ key: "name", direction: "asc" })
-  const [selectedAdmin, setSelectedAdmin] = useState(null)
-  const [generatedPassword, setGeneratedPassword] = useState("")
-  const [isCopied, setIsCopied] = useState(false)
-  const [institutions, setInstitutions] = useState([])
-  const [admins, setAdmins] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedInstitution, setSelectedInstitution] = useState('');
+  const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
+  const [generatedPassword, setGeneratedPassword] = useState('');
+  const [isCopied, setIsCopied] = useState(false);
+  const [institutions, setInstitutions] = useState([]);
+  const [admins, setAdmins] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isBulkImportDialogOpen, setIsBulkImportDialogOpen] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [previewData, setPreviewData] = useState([]);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    role: "admin",
-    department: "",
-    notes: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: 'admin',
+    department: '',
+    notes: '',
     sendCredentials: true,
-  })
+  });
 
   // Fetch institutions and admins on mount and when search/filter changes
   useEffect(() => {
@@ -99,8 +105,8 @@ export default function CreateAdminPage() {
         const [institutionsResponse, adminsResponse] = await Promise.all([
           axios.get('/api/institutions'),
           axios.get('/api/admins', {
-            params: { search: searchTerm, status: filterStatus }
-          })
+            params: { search: searchTerm, status: filterStatus },
+          }),
         ]);
 
         if (institutionsResponse.data.success) {
@@ -126,64 +132,66 @@ export default function CreateAdminPage() {
 
   const handlePermissionChange = (permissionId, checked) => {
     if (checked) {
-      setSelectedPermissions([...selectedPermissions, permissionId])
+      setSelectedPermissions([...selectedPermissions, permissionId]);
     } else {
-      setSelectedPermissions(selectedPermissions.filter((id) => id !== permissionId))
+      setSelectedPermissions(selectedPermissions.filter((id) => id !== permissionId));
     }
-  }
+  };
 
   const generatePassword = () => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
-    let password = ""
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    let password = '';
     for (let i = 0; i < 12; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length))
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    setGeneratedPassword(password)
-    return password
-  }
+    setGeneratedPassword(password);
+    return password;
+  };
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text)
-    setIsCopied(true)
-    setTimeout(() => setIsCopied(false), 2000)
-  }
+    navigator.clipboard.writeText(text);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
       key,
-      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
-    }))
-  }
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
+    }));
+  };
 
   const sortedAdmins = [...admins].sort((a, b) => {
-    if (sortConfig.key === "name" || sortConfig.key === "email" || sortConfig.key === "institution" || sortConfig.key === "status") {
-      const valueA = (a[sortConfig.key] || '').toLowerCase()
-      const valueB = (b[sortConfig.key] || '').toLowerCase()
-      return sortConfig.direction === "asc" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA)
+    if (sortConfig.key === 'name' || sortConfig.key === 'email' || sortConfig.key === 'institution' || sortConfig.key === 'status') {
+      const valueA = (a[sortConfig.key] || '').toLowerCase();
+      const valueB = (b[sortConfig.key] || '').toLowerCase();
+      return sortConfig.direction === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
     } else {
-      return sortConfig.direction === "asc" ? (a[sortConfig.key] || 0) - (b[sortConfig.key] || 0) : (b[sortConfig.key] || 0) - (a[sortConfig.key] || 0)
+      return sortConfig.direction === 'asc'
+        ? (a[sortConfig.key] || 0) - (b[sortConfig.key] || 0)
+        : (b[sortConfig.key] || 0) - (a[sortConfig.key] || 0);
     }
-  })
+  });
 
   const filteredAdmins = sortedAdmins.filter((admin) => {
     const matchesSearch =
       admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       admin.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (admin.institution || '').toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = filterStatus === "all" || admin.status === filterStatus
-    return matchesSearch && matchesStatus
-  })
+      (admin.institution || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || admin.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   const permissionsByCategory = availablePermissions.reduce(
     (acc, permission) => {
       if (!acc[permission.category]) {
-        acc[permission.category] = []
+        acc[permission.category] = [];
       }
-      acc[permission.category].push(permission)
-      return acc
+      acc[permission.category].push(permission);
+      return acc;
     },
     {},
-  )
+  );
 
   const handleCreateAdmin = async () => {
     try {
@@ -192,34 +200,37 @@ export default function CreateAdminPage() {
         ...formData,
         institutionId: selectedInstitution,
         permissions: selectedPermissions,
-        password: generatedPassword
+        password: generatedPassword,
       });
 
       if (response.data.success) {
         setAdmins([...admins, response.data.data]);
         setCurrentStep(1);
-        setSelectedInstitution("");
+        setSelectedInstitution('');
         setSelectedPermissions([]);
-        setGeneratedPassword("");
+        setGeneratedPassword('');
         setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          role: "admin",
-          department: "",
-          notes: "",
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          role: 'admin',
+          department: '',
+          notes: '',
           sendCredentials: true,
         });
+        toast.success('Admin created successfully');
       } else {
         setError(response.data.error);
+        toast.error(response.data.error);
       }
     } catch (error) {
       setError(error.response?.data?.error || error.message);
+      toast.error(error.response?.data?.error || error.message);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const handleEditAdmin = async (adminId, updatedData) => {
     try {
@@ -229,40 +240,46 @@ export default function CreateAdminPage() {
         ...updatedData,
         institutionId: selectedInstitution || undefined,
         permissions: selectedPermissions,
-        password: generatedPassword || undefined
+        password: generatedPassword || undefined,
       });
 
       if (response.data.success) {
-        setAdmins(admins.map(admin => admin._id === adminId ? response.data.data : admin));
+        setAdmins(admins.map((admin) => (admin._id === adminId ? response.data.data : admin)));
         setSelectedAdmin(null);
-        setSelectedInstitution("");
+        setSelectedInstitution('');
         setSelectedPermissions([]);
-        setGeneratedPassword("");
+        setGeneratedPassword('');
+        toast.success('Admin updated successfully');
       } else {
         setError(response.data.error);
+        toast.error(response.data.error);
       }
     } catch (error) {
       setError(error.response?.data?.error || error.message);
+      toast.error(error.response?.data?.error || error.message);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const handleDeleteAdmin = async (adminId) => {
     try {
       setIsLoading(true);
       const response = await axios.delete(`/api/admins?id=${adminId}`);
       if (response.data.success) {
-        setAdmins(admins.map(admin => admin._id === adminId ? response.data.data : admin));
+        setAdmins(admins.filter((admin) => admin._id !== adminId));
+        toast.success('Admin deleted successfully');
       } else {
         setError(response.data.error);
+        toast.error(response.data.error);
       }
     } catch (error) {
       setError(error.response?.data?.error || error.message);
+      toast.error(error.response?.data?.error || error.message);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const handleResendCredentials = async (admin) => {
     try {
@@ -271,32 +288,149 @@ export default function CreateAdminPage() {
       const response = await axios.put('/api/admins', {
         id: admin._id,
         sendCredentials: true,
-        password: newPassword
+        password: newPassword,
       });
       if (response.data.success) {
-        setAdmins(admins.map(a => a._id === admin._id ? response.data.data : a));
+        setAdmins(admins.map((a) => (a._id === admin._id ? response.data.data : a)));
+        toast.success('Credentials resent successfully');
       } else {
         setError(response.data.error);
+        toast.error(response.data.error);
       }
     } catch (error) {
       setError(error.response?.data?.error || error.message);
+      toast.error(error.response?.data?.error || error.message);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  const nextStep = () => setCurrentStep(Math.min(currentStep + 1, 3))
-  const prevStep = () => setCurrentStep(Math.max(currentStep - 1, 1))
+  const handleDownloadTemplate = () => {
+    const sampleData = [
+      {
+        firstName: 'John',
+        lastName: 'Smith',
+        email: 'john.smith@institution.edu',
+        phone: '+1 (555) 123-4567',
+        role: 'admin',
+        department: 'Academic Affairs',
+        notes: 'Sample admin user',
+        institutionId: institutions[0]?._id || '',
+        permissions: 'students,teachers,attendance',
+        status: 'Active',
+      },
+    ];
+
+    const ws = XLSX.utils.json_to_sheet(sampleData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'AdminTemplate');
+    XLSX.writeFile(wb, 'admin_template.xlsx');
+    toast.success('Template downloaded successfully');
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setImportFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const data = event.target.result;
+        const wb = XLSX.read(data, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const jsonData = XLSX.utils.sheet_to_json(ws);
+        setPreviewData(jsonData.slice(0, 5)); // Preview first 5 rows
+      };
+      reader.readAsBinaryString(file);
+    }
+  };
+
+  const handleBulkImport = async () => {
+    if (!importFile) {
+      toast.error('Please select a file to import');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const data = event.target.result;
+        const wb = XLSX.read(data, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const jsonData = XLSX.utils.sheet_to_json(ws);
+
+        const processedData = jsonData.map((row) => ({
+          firstName: row.firstName,
+          lastName: row.lastName,
+          email: row.email,
+          phone: row.phone,
+          role: row.role || 'admin',
+          department: row.department || '',
+          notes: row.notes || '',
+          institutionId: row.institutionId,
+          permissions: row.permissions ? row.permissions.split(',') : [],
+          status: row.status || 'Active',
+          sendCredentials: true,
+        }));
+
+        const response = await axios.post('/api/admins/bulk', processedData);
+        const result = response.data;
+
+        if (result.success) {
+          setAdmins([...admins, ...result.data]);
+          toast.success('Admins imported successfully');
+          setIsBulkImportDialogOpen(false);
+          setImportFile(null);
+          setPreviewData([]);
+        } else {
+          toast.error(result.error);
+        }
+      };
+      reader.readAsBinaryString(importFile);
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleExportData = () => {
+    const flattenedData = admins.map((admin) => ({
+      name: admin.name,
+      email: admin.email,
+      phone: admin.phone || '',
+      role: admin.role,
+      department: admin.department || '',
+      notes: admin.notes || '',
+      institution: admin.institution || 'Unknown',
+      institutionType: admin.institutionType || 'Unknown',
+      status: admin.status,
+      permissions: admin.permissions.join(','),
+      lastLogin: admin.lastLogin ? new Date(admin.lastLogin).toLocaleString() : 'Never',
+      createdAt: new Date(admin.createdAt).toLocaleString(),
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(flattenedData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Admins');
+    XLSX.writeFile(wb, 'admins.xlsx');
+    toast.success('Admins exported successfully');
+  };
+
+  const nextStep = () => setCurrentStep(Math.min(currentStep + 1, 3));
+  const prevStep = () => setCurrentStep(Math.max(currentStep - 1, 1));
 
   const stepVariants = {
     hidden: { opacity: 0, x: 50 },
     visible: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: -50 },
-  }
+  };
 
   const cardVariants = {
-    hover: { scale: 1.03, boxShadow: "0 8px 24px rgba(0,0,0,0.15)" },
-  }
+    hover: { scale: 1.03, boxShadow: '0 8px 24px rgba(0,0,0,0.15)' },
+  };
 
   return (
     <TooltipProvider>
@@ -305,7 +439,7 @@ export default function CreateAdminPage() {
         {isLoading && <div className="text-blue-500">Loading...</div>}
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -314,15 +448,17 @@ export default function CreateAdminPage() {
             <p className="text-gray-600 dark:text-gray-300 text-lg">Create and manage admin users for institutions</p>
           </motion.div>
           <div className="flex flex-wrap gap-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
+              onClick={handleExportData}
               className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm"
             >
               <Download className="w-4 h-4 mr-2" />
               Export Admins
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
+              onClick={() => setIsBulkImportDialogOpen(true)}
               className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm"
             >
               <Users className="w-4 h-4 mr-2" />
@@ -331,17 +467,22 @@ export default function CreateAdminPage() {
           </div>
         </div>
 
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           {[
-            { title: "Total Admins", value: admins.length, icon: Users, progress: 75 },
-            { title: "Active Admins", value: admins.filter((a) => a.status === "Active").length, icon: CheckCircle, progress: 85 },
-            { title: "Pending Setup", value: admins.filter((a) => a.status === "Pending").length, icon: Clock, progress: 20 },
-            { title: "This Month", value: admins.filter(a => new Date(a.createdAt).getMonth() === new Date().getMonth()).length, icon: UserPlus, progress: 60 },
+            { title: 'Total Admins', value: admins.length, icon: Users, progress: 75 },
+            { title: 'Active Admins', value: admins.filter((a) => a.status === 'Active').length, icon: CheckCircle, progress: 85 },
+            { title: 'Pending Setup', value: admins.filter((a) => a.status === 'Pending').length, icon: Clock, progress: 20 },
+            {
+              title: 'This Month',
+              value: admins.filter((a) => new Date(a.createdAt).getMonth() === new Date().getMonth()).length,
+              icon: UserPlus,
+              progress: 60,
+            },
           ].map((stat, index) => (
             <motion.div key={index} variants={cardVariants} whileHover="hover">
               <Card className="bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow duration-300 border-0">
@@ -352,7 +493,7 @@ export default function CreateAdminPage() {
                 <CardContent>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {stat.title === "This Month" ? "New admins created" : "Across all institutions"}
+                    {stat.title === 'This Month' ? 'New admins created' : 'Across all institutions'}
                   </p>
                   <Progress value={stat.progress} className="mt-3 h-2" />
                 </CardContent>
@@ -371,18 +512,18 @@ export default function CreateAdminPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between mb-8">
-              {["Basic Info", "Institution & Role", "Permissions"].map((step, index) => (
+              {['Basic Info', 'Institution & Role', 'Permissions'].map((step, index) => (
                 <div key={index} className="flex items-center">
                   <motion.div
                     className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
                       currentStep > index + 1
-                        ? "bg-blue-600 text-white"
+                        ? 'bg-blue-600 text-white'
                         : currentStep === index + 1
-                          ? "bg-blue-500 text-white ring-2 ring-blue-300"
-                          : "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                        ? 'bg-blue-500 text-white ring-2 ring-blue-300'
+                        : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
                     }`}
                     whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                   >
                     {index + 1}
                   </motion.div>
@@ -390,7 +531,7 @@ export default function CreateAdminPage() {
                   {index < 2 && (
                     <div
                       className={`w-20 h-1 ml-4 ${
-                        currentStep > index + 1 ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"
+                        currentStep > index + 1 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
                       }`}
                     />
                   )}
@@ -466,9 +607,9 @@ export default function CreateAdminPage() {
                           onChange={(e) => setGeneratedPassword(e.target.value)}
                           className="border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 transition-all duration-300 rounded-lg"
                         />
-                        <Button 
-                          type="button" 
-                          variant="outline" 
+                        <Button
+                          type="button"
+                          variant="outline"
                           onClick={generatePassword}
                           className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                         >
@@ -481,7 +622,7 @@ export default function CreateAdminPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => copyToClipboard(generatedPassword)}
-                            className={`relative bg-white dark:bg-gray-800 ${isCopied ? "bg-green-100 dark:bg-green-900/20" : ""}`}
+                            className={`relative bg-white dark:bg-gray-800 ${isCopied ? 'bg-green-100 dark:bg-green-900/20' : ''}`}
                           >
                             <Copy className="w-4 h-4" />
                             {isCopied && (
@@ -500,10 +641,10 @@ export default function CreateAdminPage() {
                     </div>
                     <div>
                       <Label htmlFor="confirmPassword" className="font-semibold">Confirm Password *</Label>
-                      <Input 
-                        id="confirmPassword" 
-                        type="password" 
-                        placeholder="Confirm password" 
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="Confirm password"
                         className="border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 transition-all duration-300 rounded-lg"
                       />
                     </div>
@@ -552,14 +693,14 @@ export default function CreateAdminPage() {
                       </SelectContent>
                     </Select>
                     {selectedInstitution && (
-                      <motion.div 
+                      <motion.div
                         className="mt-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
                       >
                         {(() => {
-                          const institution = institutions.find((i) => i._id === selectedInstitution)
+                          const institution = institutions.find((i) => i._id === selectedInstitution);
                           return institution ? (
                             <div>
                               <p className="font-medium text-gray-900 dark:text-white">{institution.name}</p>
@@ -568,18 +709,18 @@ export default function CreateAdminPage() {
                                 <span>{institution.students} Students</span>
                                 <Badge variant="outline" className="border-blue-500 text-blue-500">{institution.type}</Badge>
                                 <Badge
-                                  variant={institution.status === "Active" ? "default" : "secondary"}
+                                  variant={institution.status === 'Active' ? 'default' : 'secondary'}
                                   className={
-                                    institution.status === "Active"
-                                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                                      : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                                    institution.status === 'Active'
+                                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
                                   }
                                 >
                                   {institution.status}
                                 </Badge>
                               </div>
                             </div>
-                          ) : null
+                          ) : null;
                         })()}
                       </motion.div>
                     )}
@@ -610,7 +751,7 @@ export default function CreateAdminPage() {
                       />
                     </div>
                   </div>
-                  <motion.div 
+                  <motion.div
                     className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg shadow-sm"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -618,10 +759,10 @@ export default function CreateAdminPage() {
                   >
                     <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Role Permissions Preview</h4>
                     <p className="text-sm text-blue-700 dark:text-blue-300">
-                      {formData.role === "admin" && "Full access to all institution features and settings"}
-                      {formData.role === "sub-admin" && "Limited access to core features, no system settings"}
-                      {formData.role === "manager" && "Access to specific departments and reporting features"}
-                      {formData.role === "coordinator" && "Basic access to student and teacher management"}
+                      {formData.role === 'admin' && 'Full access to all institution features and settings'}
+                      {formData.role === 'sub-admin' && 'Limited access to core features, no system settings'}
+                      {formData.role === 'manager' && 'Access to specific departments and reporting features'}
+                      {formData.role === 'coordinator' && 'Basic access to student and teacher management'}
                     </p>
                   </motion.div>
                 </motion.div>
@@ -644,7 +785,7 @@ export default function CreateAdminPage() {
                     </p>
                     <div className="space-y-6">
                       {Object.entries(permissionsByCategory).map(([category, permissions]) => (
-                        <motion.div 
+                        <motion.div
                           key={category}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -657,7 +798,7 @@ export default function CreateAdminPage() {
                                 key={permission.id}
                                 className="flex items-start space-x-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                 whileHover={{ scale: 1.02 }}
-                                transition={{ type: "spring", stiffness: 300 }}
+                                transition={{ type: 'spring', stiffness: 300 }}
                               >
                                 <Checkbox
                                   id={permission.id}
@@ -694,7 +835,7 @@ export default function CreateAdminPage() {
                       <Label htmlFor="sendCredentials" className="font-semibold">Send login credentials via email</Label>
                     </div>
                     {selectedPermissions.length > 0 && (
-                      <motion.div 
+                      <motion.div
                         className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg shadow-sm"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -705,12 +846,16 @@ export default function CreateAdminPage() {
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {selectedPermissions.map((permissionId) => {
-                            const permission = availablePermissions.find((p) => p.id === permissionId)
+                            const permission = availablePermissions.find((p) => p.id === permissionId);
                             return permission ? (
-                              <Badge key={permissionId} variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                              <Badge
+                                key={permissionId}
+                                variant="secondary"
+                                className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                              >
                                 {permission.label}
                               </Badge>
-                            ) : null
+                            ) : null;
                           })}
                         </div>
                       </motion.div>
@@ -721,9 +866,9 @@ export default function CreateAdminPage() {
             </AnimatePresence>
 
             <div className="flex justify-between mt-8">
-              <Button 
-                variant="outline" 
-                onClick={prevStep} 
+              <Button
+                variant="outline"
+                onClick={prevStep}
                 disabled={currentStep === 1}
                 className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-lg"
               >
@@ -731,7 +876,7 @@ export default function CreateAdminPage() {
               </Button>
               <div className="flex space-x-2">
                 {currentStep < 3 ? (
-                  <Button 
+                  <Button
                     onClick={nextStep}
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors rounded-lg"
                     disabled={!selectedInstitution && currentStep === 2}
@@ -739,7 +884,7 @@ export default function CreateAdminPage() {
                     Next
                   </Button>
                 ) : (
-                  <Button 
+                  <Button
                     onClick={handleCreateAdmin}
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors rounded-lg"
                     disabled={isLoading || !generatedPassword || selectedPermissions.length === 0 || !selectedInstitution}
@@ -761,8 +906,8 @@ export default function CreateAdminPage() {
                 <CardDescription className="text-gray-600 dark:text-gray-300">Manage all admin users in the system</CardDescription>
               </div>
               <div className="flex space-x-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-lg"
                   onClick={() => {
@@ -798,7 +943,7 @@ export default function CreateAdminPage() {
                   <SelectItem value="Inactive">Inactive</SelectItem>
                 </SelectContent>
               </Select>
-              <Button 
+              <Button
                 variant="outline"
                 className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-lg"
               >
@@ -811,13 +956,13 @@ export default function CreateAdminPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort("name")} className="flex items-center space-x-1">
+                    <Button variant="ghost" onClick={() => handleSort('name')} className="flex items-center space-x-1">
                       Admin
                       <ArrowUpDown className="w-4 h-4" />
                     </Button>
                   </TableHead>
                   <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort("institution")} className="flex items-center space-x-1">
+                    <Button variant="ghost" onClick={() => handleSort('institution')} className="flex items-center space-x-1">
                       Institution
                       <ArrowUpDown className="w-4 h-4" />
                     </Button>
@@ -825,13 +970,13 @@ export default function CreateAdminPage() {
                   <TableHead>Contact</TableHead>
                   <TableHead>Permissions</TableHead>
                   <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort("lastLogin")} className="flex items-center space-x-1">
+                    <Button variant="ghost" onClick={() => handleSort('lastLogin')} className="flex items-center space-x-1">
                       Last Login
                       <ArrowUpDown className="w-4 h-4" />
                     </Button>
                   </TableHead>
                   <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort("status")} className="flex items-center space-x-1">
+                    <Button variant="ghost" onClick={() => handleSort('status')} className="flex items-center space-x-1">
                       Status
                       <ArrowUpDown className="w-4 h-4" />
                     </Button>
@@ -841,7 +986,7 @@ export default function CreateAdminPage() {
               </TableHeader>
               <TableBody>
                 {filteredAdmins.map((admin) => (
-                  <motion.tr 
+                  <motion.tr
                     key={admin._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -884,7 +1029,10 @@ export default function CreateAdminPage() {
                         {admin.permissions.slice(0, 2).map((permission, index) => (
                           <UiTooltip key={index}>
                             <TooltipTrigger asChild>
-                              <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 text-xs">
+                              <Badge
+                                variant="secondary"
+                                className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 text-xs"
+                              >
                                 {permission}
                               </Badge>
                             </TooltipTrigger>
@@ -894,7 +1042,10 @@ export default function CreateAdminPage() {
                           </UiTooltip>
                         ))}
                         {admin.permissions.length > 2 && (
-                          <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 text-xs">
+                          <Badge
+                            variant="secondary"
+                            className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 text-xs"
+                          >
                             +{admin.permissions.length - 2}
                           </Badge>
                         )}
@@ -909,18 +1060,18 @@ export default function CreateAdminPage() {
                     <TableCell>
                       <Badge
                         variant={
-                          admin.status === "Active"
-                            ? "default"
-                            : admin.status === "Pending"
-                              ? "secondary"
-                              : "destructive"
+                          admin.status === 'Active'
+                            ? 'default'
+                            : admin.status === 'Pending'
+                            ? 'secondary'
+                            : 'destructive'
                         }
                         className={
-                          admin.status === "Active"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                            : admin.status === "Pending"
-                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                              : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                          admin.status === 'Active'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                            : admin.status === 'Pending'
+                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                         }
                       >
                         {admin.status}
@@ -930,9 +1081,9 @@ export default function CreateAdminPage() {
                       <div className="flex items-center space-x-2">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => {
                                 setSelectedAdmin(admin);
                                 setSelectedInstitution(admin.institutionId?._id || '');
@@ -949,7 +1100,7 @@ export default function CreateAdminPage() {
                               <DialogDescription>Complete information about {selectedAdmin?.name}</DialogDescription>
                             </DialogHeader>
                             {selectedAdmin && (
-                              <motion.div 
+                              <motion.div
                                 className="space-y-6"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -988,17 +1139,23 @@ export default function CreateAdminPage() {
                                         <span className="font-medium">Type:</span> {selectedAdmin.institutionType || 'Unknown'}
                                       </p>
                                       <p>
-                                        <span className="font-medium">Last Login:</span> {selectedAdmin.lastLogin ? new Date(selectedAdmin.lastLogin).toLocaleString() : 'Never'}
+                                        <span className="font-medium">Last Login:</span>{' '}
+                                        {selectedAdmin.lastLogin ? new Date(selectedAdmin.lastLogin).toLocaleString() : 'Never'}
                                       </p>
                                       <p>
-                                        <span className="font-medium">Created:</span> {new Date(selectedAdmin.createdAt).toLocaleString()}
+                                        <span className="font-medium">Created:</span>{' '}
+                                        {new Date(selectedAdmin.createdAt).toLocaleString()}
                                       </p>
                                     </div>
                                     <div className="space-y-2">
                                       <h4 className="font-semibold text-gray-900 dark:text-white">Permissions</h4>
                                       <div className="flex flex-wrap gap-2">
                                         {selectedAdmin.permissions.map((permission, index) => (
-                                          <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                          <Badge
+                                            key={index}
+                                            variant="secondary"
+                                            className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                                          >
                                             {permission}
                                           </Badge>
                                         ))}
@@ -1026,7 +1183,7 @@ export default function CreateAdminPage() {
                               </motion.div>
                             )}
                             <DialogFooter>
-                              <Button 
+                              <Button
                                 variant="outline"
                                 className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                 onClick={() => handleResendCredentials(selectedAdmin)}
@@ -1034,12 +1191,14 @@ export default function CreateAdminPage() {
                                 <Send className="w-4 h-4 mr-2" />
                                 Resend Credentials
                               </Button>
-                              <Button 
+                              <Button
                                 className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors"
-                                onClick={() => handleEditAdmin(selectedAdmin._id, {
-                                  ...formData,
-                                  name: `${formData.firstName} ${formData.lastName}`
-                                })}
+                                onClick={() =>
+                                  handleEditAdmin(selectedAdmin._id, {
+                                    ...formData,
+                                    name: `${formData.firstName} ${formData.lastName}`,
+                                  })
+                                }
                               >
                                 <Edit className="w-4 h-4 mr-2" />
                                 Edit Admin
@@ -1047,8 +1206,8 @@ export default function CreateAdminPage() {
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           className="hover:bg-gray-100 dark:hover:bg-gray-800"
                           onClick={() => {
@@ -1063,16 +1222,16 @@ export default function CreateAdminPage() {
                               role: admin.role,
                               department: admin.department || '',
                               notes: admin.notes || '',
-                              sendCredentials: formData.sendCredentials
+                              sendCredentials: formData.sendCredentials,
                             });
                             setCurrentStep(1);
                           }}
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           className="text-red-600 hover:bg-red-100 dark:hover:bg-red-900/20"
                           onClick={() => handleDeleteAdmin(admin._id)}
                         >
@@ -1086,7 +1245,129 @@ export default function CreateAdminPage() {
             </Table>
           </CardContent>
         </Card>
+
+        <Dialog open={isBulkImportDialogOpen} onOpenChange={setIsBulkImportDialogOpen}>
+          <DialogContent className={clsx('max-w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto')}>
+            <DialogHeader>
+              <DialogTitle>Bulk Import Admins</DialogTitle>
+              <DialogDescription>Upload an Excel file to import multiple admins. Download the template to ensure correct format.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6">
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Expected Data Format</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  The Excel file should contain the following columns. Permissions should be a comma-separated list of permission IDs (e.g., "students,teachers,attendance").
+                </p>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>firstName</TableHead>
+                      <TableHead>lastName</TableHead>
+                      <TableHead>email</TableHead>
+                      <TableHead>phone</TableHead>
+                      <TableHead>role</TableHead>
+                      <TableHead>department</TableHead>
+                      <TableHead>notes</TableHead>
+                      <TableHead>institutionId</TableHead>
+                      <TableHead>permissions</TableHead>
+                      <TableHead>status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>John</TableCell>
+                      <TableCell>Smith</TableCell>
+                      <TableCell>john.smith@institution.edu</TableCell>
+                      <TableCell>+1 (555) 123-4567</TableCell>
+                      <TableCell>admin</TableCell>
+                      <TableCell>Academic Affairs</TableCell>
+                      <TableCell>Sample admin user</TableCell>
+                      <TableCell>{institutions[0]?._id || 'institution_id'}</TableCell>
+                      <TableCell>students,teachers,attendance</TableCell>
+                      <TableCell>Active</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+                <Button
+                  variant="outline"
+                  onClick={handleDownloadTemplate}
+                  className="mt-4 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Template
+                </Button>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Upload File</h4>
+                <Input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleFileChange}
+                  className="border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 transition-all duration-300 rounded-lg"
+                />
+              </div>
+              {previewData.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Data Preview (First 5 Rows)</h4>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>firstName</TableHead>
+                        <TableHead>lastName</TableHead>
+                        <TableHead>email</TableHead>
+                        <TableHead>phone</TableHead>
+                        <TableHead>role</TableHead>
+                        <TableHead>department</TableHead>
+                        <TableHead>notes</TableHead>
+                        <TableHead>institutionId</TableHead>
+                        <TableHead>permissions</TableHead>
+                        <TableHead>status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {previewData.map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{row.firstName}</TableCell>
+                          <TableCell>{row.lastName}</TableCell>
+                          <TableCell>{row.email}</TableCell>
+                          <TableCell>{row.phone || 'N/A'}</TableCell>
+                          <TableCell>{row.role || 'admin'}</TableCell>
+                          <TableCell>{row.department || 'N/A'}</TableCell>
+                          <TableCell>{row.notes || 'N/A'}</TableCell>
+                          <TableCell>{row.institutionId}</TableCell>
+                          <TableCell>{row.permissions || 'None'}</TableCell>
+                          <TableCell>{row.status || 'Active'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </div>
+            <DialogFooter className="mt-6">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsBulkImportDialogOpen(false);
+                  setImportFile(null);
+                  setPreviewData([]);
+                }}
+                className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleBulkImport}
+                disabled={isLoading || !importFile}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Import Admins
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
-  )
+  );
 }
